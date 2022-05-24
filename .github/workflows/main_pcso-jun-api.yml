@@ -21,7 +21,7 @@ jobs:
 
       - name: dotnet publish
         run: |
-          cd .\pcso-jun-api\pcso-jun-api
+          cd .\pcso-jun-api\pcso-jun-api\pcso-jun-api
           dotnet build -c Release
           dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
