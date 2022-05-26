@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Azure.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
@@ -6,7 +8,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddSignalR();
 //var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -84,6 +86,8 @@ app.MapDelete("/todoitems", async (TodoDb db) =>
     //return Results.Ok;
 });
 
+app.MapHub<Chat>(nameof(Chat));
+
 app.Run();
 
 class Todo
@@ -101,6 +105,14 @@ class TodoDb : DbContext
         : base(options) { }
 
     public DbSet<Todo> Todos => Set<Todo>();
+}
+
+public class Chat : Hub
+{
+    public void Broadcast(string name, string message)
+    {
+        Clients.All.SendAsync("Receive", name, message);
+    }
 }
 //// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
